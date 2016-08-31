@@ -23,11 +23,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   9 .debug_frame  000000c0  00000000  00000000  00000b48  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00000285  00000000  00000000  00000c08  2**0
+ 10 .debug_str    00000296  00000000  00000000  00000c08  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00000108  00000000  00000000  00000e8d  2**0
+ 11 .debug_loc    00000108  00000000  00000000  00000e9e  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000038  00000000  00000000  00000f95  2**0
+ 12 .debug_ranges 00000038  00000000  00000000  00000fa6  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -85,7 +85,7 @@ Disassembly of section .text:
 00000048 <__vector_9>:
 
 
-// Free running ADC interrupt;
+//Free running ADC interrupt;
 
 ISR(ADC_vect)
 {
@@ -100,7 +100,7 @@ ISR(ADC_vect)
   58:	ef 93       	push	r30
   5a:	ff 93       	push	r31
 	static unsigned char input_index=0;
-	// Read the AD conversion result
+	//Read the AD conversion result;
 	adcScanningData[input_index]=ADCW;
   5c:	80 91 62 00 	lds	r24, 0x0062
   60:	e8 2f       	mov	r30, r24
@@ -113,7 +113,7 @@ ISR(ADC_vect)
   6e:	ff 4f       	sbci	r31, 0xFF	; 255
   70:	31 83       	std	Z+1, r19	; 0x01
   72:	20 83       	st	Z, r18
-	// Select next ADC input
+	//Select next ADC input;
 	if (++input_index > (LAST_ADC_INPUT-FIRST_ADC_INPUT))
   74:	8f 5f       	subi	r24, 0xFF	; 255
   76:	82 30       	cpi	r24, 0x02	; 2
@@ -135,9 +135,9 @@ ISR(ADC_vect)
   8c:	80 e2       	ldi	r24, 0x20	; 32
   8e:	8a 95       	dec	r24
   90:	f1 f7       	brne	.-4      	; 0x8e <__vector_9+0x46>
-	// Delay needed for the stabilization of the ADC input voltage
+	//Delay needed for the stabilization of the ADC input voltage;
 	_delay_us(10);
-	// Start the AD conversion
+	//Start the AD conversion;
 	ADCSRA|=(1<<ADSC); //ADCSRA|=0x40
   92:	36 9a       	sbi	0x06, 6	; 6
 }
@@ -154,7 +154,7 @@ ISR(ADC_vect)
 
 000000a8 <__vector_6>:
 
-// Timer0 compare interrupt;
+//Timer0 compare interrupt;
 
 ISR (TIM0_COMPA_vect)
 {
@@ -167,7 +167,7 @@ ISR (TIM0_COMPA_vect)
   b4:	3f 93       	push	r19
   b6:	8f 93       	push	r24
   b8:	9f 93       	push	r25
-	// Counter for light switch - is 25 milliseconds;
+	//Counter for light switch - is 25 milliseconds;
 	const short INTERRUPT_DELAY = 25;
 	static unsigned char acNetCounter = INTERRUPT_DELAY;
 	
@@ -175,14 +175,14 @@ ISR (TIM0_COMPA_vect)
   ba:	b1 9b       	sbis	0x16, 1	; 22
   bc:	0e c0       	rjmp	.+28     	; 0xda <__vector_6+0x32>
 	{
-		// Read 1 state - switch is active;
-		// Time checking;
+		//Read 1 state - switch is active;
+		//Time checking;
 		if(acNetCounter)
   be:	80 91 60 00 	lds	r24, 0x0060
   c2:	88 23       	and	r24, r24
   c4:	21 f0       	breq	.+8      	; 0xce <__vector_6+0x26>
 		{
-			// time is not run;
+			//Time is not run;
 			acNetCounter --;
   c6:	81 50       	subi	r24, 0x01	; 1
   c8:	80 93 60 00 	sts	0x0060, r24
@@ -190,10 +190,10 @@ ISR (TIM0_COMPA_vect)
 		}
 		else
 		{
-			// 15 mseconds switch is on;
+			//15 mseconds switch is on;
 			keyFlag = 0;
   ce:	10 92 6b 00 	sts	0x006B, r1
-			// set the counter again;
+			//Set the counter again;
 			acNetCounter = INTERRUPT_DELAY;
   d2:	89 e1       	ldi	r24, 0x19	; 25
   d4:	80 93 60 00 	sts	0x0060, r24
@@ -202,16 +202,16 @@ ISR (TIM0_COMPA_vect)
 	}
 	else
 	{
-		// Read 0 - Switch is on;
+		//Read 0 - Switch is on;
 		keyFlag = 1;
   da:	81 e0       	ldi	r24, 0x01	; 1
   dc:	80 93 6b 00 	sts	0x006B, r24
-		// set the counter again;
+		//Set the counter again;
 		acNetCounter = INTERRUPT_DELAY;
   e0:	89 e1       	ldi	r24, 0x19	; 25
   e2:	80 93 60 00 	sts	0x0060, r24
 	}
-	// Start with switch / debounnce;
+	//Start with switch / debounnce;
 	if (keyFlag)
   e6:	80 91 6b 00 	lds	r24, 0x006B
   ea:	88 23       	and	r24, r24
@@ -326,7 +326,7 @@ ISR (TIM0_COMPA_vect)
  1e6:	10 92 6e 00 	sts	0x006E, r1
 	}
 
-	// Switch on delay and Pir sensor debounce
+	//Switch on delay and Pir sensor debounce;
 	if ((!(PINB & (1<<PIR))) && (keyFlag==0)&&(photoSeensor>=sensivity))
  1ea:	b0 99       	sbic	0x16, 0	; 22
  1ec:	19 c0       	rjmp	.+50     	; 0x220 <__vector_6+0x178>
@@ -387,11 +387,11 @@ ISR (TIM0_COMPA_vect)
  272:	1f 90       	pop	r1
  274:	18 95       	reti
 
-00000276 <init>:
+00000276 <MCU_init>:
 
-void init (void)
+void MCU_init (void)
 {
-	// Crystal Oscillator division factor: 1
+	//Crystal Oscillator division factor: 1;
 	#pragma optsize-
 	CLKPR=(1<<CLKPCE);
  276:	80 e8       	ldi	r24, 0x80	; 128
@@ -400,21 +400,21 @@ void init (void)
  27a:	16 bc       	out	0x26, r1	; 38
 	#endif
 
-	// Input/Output Ports initialization
-	// Port B initialization
-	// Function: Bit5=In Bit4=In Bit3=Out Bit2=In Bit1=In Bit0=In
+	//Input/Output Ports initialization;
+	//Port B initialization;
+	//Function: Bit5=In Bit4=In Bit3=Out Bit2=In Bit1=In Bit0=In;
 	DDRB=(0<<DDB5) | (0<<DDB4) | (1<<DDB3) | (0<<DDB2) | (0<<DDB1) | (0<<DDB0);
  27c:	88 e0       	ldi	r24, 0x08	; 8
  27e:	87 bb       	out	0x17, r24	; 23
-	// State: Bit5=T Bit4=P Bit3=1 Bit2=T Bit1=P Bit0=T
+	// State: Bit5=T Bit4=P Bit3=1 Bit2=T Bit1=P Bit0=T;
 	PORTB=(0<<PORTB5) | (1<<PORTB4) | (0<<PORTB3) | (0<<PORTB2) | (1<<PORTB1) | (1<<PORTB0);
  280:	83 e1       	ldi	r24, 0x13	; 19
  282:	88 bb       	out	0x18, r24	; 24
-	// ADC initialization
-	// ADC Clock frequency: 150,000 kHz
-	// ADC Bandgap Voltage Reference: Off
-	// ADC Auto Trigger Source: Free Running
-	// Digital input buffers on ADC0: On, ADC1: On, ADC2: On, ADC3: On
+	//ADC initialization;
+	//ADC Clock frequency: 150,000 kHz;
+	//ADC Bandgap Voltage Reference: Off;
+	//ADC Auto Trigger Source: Free Running;
+	//Digital input buffers on ADC0: On, ADC1: On, ADC2: On, ADC3: On;
 	DIDR0=(0<<ADC0D) | (0<<ADC2D) | (0<<ADC3D) | (0<<ADC1D);
  284:	14 ba       	out	0x14, r1	; 20
 	ADMUX=FIRST_ADC_INPUT | ADC_VREF_TYPE;
@@ -425,11 +425,11 @@ void init (void)
  28c:	86 b9       	out	0x06, r24	; 6
 	ADCSRB=(0<<ADTS2) | (0<<ADTS1) | (0<<ADTS0);
  28e:	13 b8       	out	0x03, r1	; 3
-	// Timer/Counter 0 initialization
-	// Clock source: System Clock
-	// Clock value: 150,000 kHz
-	// Mode: CTC top=OCR0A
-	// Timer Period: 1 ms
+	//Timer/Counter 0 initialization;
+	//Clock source: System Clock;
+	//Clock value: 150,000 kHz;
+	//Mode: CTC top=OCR0A;
+	//Timer Period: 1 ms;
 	TCCR0A=(0<<COM0A1) | (0<<COM0A0) | (0<<COM0B1) | (0<<COM0B0) | (1<<WGM01) | (0<<WGM00);
  290:	82 e0       	ldi	r24, 0x02	; 2
  292:	8f bd       	out	0x2f, r24	; 47
@@ -444,7 +444,7 @@ void init (void)
 	OCR0B=0x00;
  29e:	19 bc       	out	0x29, r1	; 41
 
-	// Timer/Counter 0 Interrupt(s) initialization
+	//Timer/Counter 0 Interrupt(s) initialization;
 	TIMSK0=(0<<OCIE0B) | (1<<OCIE0A) | (0<<TOIE0);
  2a0:	84 e0       	ldi	r24, 0x04	; 4
  2a2:	89 bf       	out	0x39, r24	; 57
@@ -458,7 +458,7 @@ void init (void)
 
 void adcInputsread (void)
 {
-	// first channel value, PORTB2 ;
+	//First channel value, PORTB2;
 	photoSeensor=adcScanningData[0];
  2a8:	e4 e7       	ldi	r30, 0x74	; 116
  2aa:	f0 e0       	ldi	r31, 0x00	; 0
@@ -466,7 +466,7 @@ void adcInputsread (void)
  2ae:	91 81       	ldd	r25, Z+1	; 0x01
  2b0:	90 93 73 00 	sts	0x0073, r25
  2b4:	80 93 72 00 	sts	0x0072, r24
-	// second channel value, PORTB4;
+	//Second channel value, PORTB4;
 	sensivity=adcScanningData[1];
  2b8:	82 81       	ldd	r24, Z+2	; 0x02
  2ba:	93 81       	ldd	r25, Z+3	; 0x03
@@ -480,20 +480,20 @@ void adcInputsread (void)
 void mainLogic (void)
 {
  2c6:	cf 93       	push	r28
-	// switch state
+	//Switch state
 	unsigned char switchOn;
-	// Forbid global interrupts;
+	//Forbid global interrupts;
 	cli ();
  2c8:	f8 94       	cli
 	switchOn = keyFlag;
  2ca:	c0 91 6b 00 	lds	r28, 0x006B
-	// Allow global interrupts;
+	//Allow global interrupts;
 	sei ();
  2ce:	78 94       	sei
 	// ADC read function(10bit);
 	adcInputsread();
  2d0:	eb df       	rcall	.-42     	; 0x2a8 <adcInputsread>
-	// AC switch priority;
+	//AC switch priority;
 	while (switchOn && (timeCounter>=DEBOUNCE) && (hours<AC_SWITCHOFF_DELAY))
  2d2:	cc 23       	and	r28, r28
  2d4:	e9 f0       	breq	.+58     	; 0x310 <mainLogic+0x4a>
@@ -522,7 +522,7 @@ void mainLogic (void)
 		PORTB |=(1<<BULB);
 	}
 	
-		// PIR=0,Switch=1
+		//PIR=0,Switch=1;
 		if ((photoSeensor>=sensivity) && (!(PINB & (1<<PIR)))  && (on>=PIRDELAY))
  310:	20 91 72 00 	lds	r18, 0x0072
  314:	30 91 73 00 	lds	r19, 0x0073
@@ -539,7 +539,7 @@ void mainLogic (void)
  334:	9b 40       	sbci	r25, 0x0B	; 11
  336:	10 f0       	brcs	.+4      	; 0x33c <mainLogic+0x76>
 		{
-			// Out is log 1;
+			//Out is log 1;
 			PORTB |=(1<<BULB);
  338:	c3 9a       	sbi	0x18, 3	; 24
  33a:	31 c0       	rjmp	.+98     	; 0x39e <mainLogic+0xd8>
@@ -606,7 +606,7 @@ void mainLogic (void)
  394:	04 c0       	rjmp	.+8      	; 0x39e <mainLogic+0xd8>
 	// ADC read function(10bit);
 	adcInputsread();
-	// AC switch priority;
+	//AC switch priority;
 	while (switchOn && (timeCounter>=DEBOUNCE) && (hours<AC_SWITCHOFF_DELAY))
 	{
 		PORTB |=(1<<BULB);
@@ -619,6 +619,7 @@ void mainLogic (void)
 						}
 	
 	
+}
  39e:	cf 91       	pop	r28
  3a0:	08 95       	ret
 
@@ -628,13 +629,13 @@ void mainLogic (void)
 
 int main(void)
 {
-	init();
- 3a2:	69 df       	rcall	.-302    	; 0x276 <init>
+	MCU_init();
+ 3a2:	69 df       	rcall	.-302    	; 0x276 <MCU_init>
 
 	while (1)
 	{
 
-		// Main logic function;
+		//Main logic function;
 		mainLogic();
  3a4:	90 df       	rcall	.-224    	; 0x2c6 <mainLogic>
 		

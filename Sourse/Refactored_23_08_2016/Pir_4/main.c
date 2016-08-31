@@ -13,10 +13,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>	
-<<<<<<< HEAD
-//_BV & bit_is_set/bit_is_clear;
-=======
->>>>>>> origin/master
 #include <avr/sfr_defs.h>	
 #define DEBOUNCE 2000
 #define PIRDELAY 3000
@@ -47,15 +43,10 @@ volatile unsigned int milliSeconds = 0, seconds = 0, minutes=0, hours=0;
 		
 //Prototype of functions;
 
-<<<<<<< HEAD
+
 //Peripherial initialisation;
-void init (void);
-//ADC data read function;
-=======
-//peripherial initialisation;
 void MCU_init (void);
 // ADC data read function;
->>>>>>> origin/master
 void adcInputsread (void);
 //Main logic function;
 void mainLogic (void);
@@ -172,10 +163,7 @@ int main(void)
 	while (1)
 	{
 
-<<<<<<< HEAD
 		//Main logic function;
-=======
->>>>>>> origin/master
 		mainLogic();
 		
 	}
