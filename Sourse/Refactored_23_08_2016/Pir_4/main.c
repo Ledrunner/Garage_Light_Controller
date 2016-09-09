@@ -47,22 +47,22 @@ volatile unsigned int milliSeconds = 0, seconds = 0, minutes=0, hours=0;
 //Peripherial initialisation;
 void MCU_init (void);
 // ADC data read function;
-void adcInputsread (void);
+void AdcInputsread (void);
 //Main logic function;
-void mainLogic (void);
+void MainLogic (void);
 
 
 //Free running ADC interrupt;
 
 ISR(ADC_vect)
 {
-	static unsigned char input_index=0;
+	static unsigned char inputIndex=0;
 	//Read the AD conversion result;
-	adcScanningData[input_index]=ADCW;
+	adcScanningData[inputIndex]=ADCW;
 	//Select next ADC input;
-	if (++input_index > (LAST_ADC_INPUT-FIRST_ADC_INPUT))
-	input_index=0;
-	ADMUX=(FIRST_ADC_INPUT | ADC_VREF_TYPE)+input_index;
+	if (++inputIndex > (LAST_ADC_INPUT-FIRST_ADC_INPUT))
+	inputIndex=0;
+	ADMUX=(FIRST_ADC_INPUT | ADC_VREF_TYPE)+inputIndex;
 	//Delay needed for the stabilization of the ADC input voltage;
 	_delay_us(10);
 	//Start the AD conversion;
@@ -164,7 +164,7 @@ int main(void)
 	{
 
 		//Main logic function;
-		mainLogic();
+		MainLogic();
 		
 	}
 	
@@ -214,7 +214,7 @@ void MCU_init (void)
 	sei ();
 }
 
-void adcInputsread (void)
+void AdcInputsread (void)
 {
 	//First channel value, PORTB2;
 	photoSeensor=adcScanningData[0];
@@ -222,7 +222,7 @@ void adcInputsread (void)
 	sensivity=adcScanningData[1];
 }
 
-void mainLogic (void)
+void MainLogic (void)
 {
 	//Switch state
 	unsigned char switchOn;
@@ -232,7 +232,7 @@ void mainLogic (void)
 	//Allow global interrupts;
 	sei ();
 	// ADC read function(10bit);
-	adcInputsread();
+	AdcInputsread();
 	//AC switch priority;
 	while (switchOn && (timeCounter>=DEBOUNCE) && (hours<AC_SWITCHOFF_DELAY))
 	{

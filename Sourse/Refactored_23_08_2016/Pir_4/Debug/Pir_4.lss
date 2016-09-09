@@ -23,11 +23,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   9 .debug_frame  000000c0  00000000  00000000  00000b48  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00000296  00000000  00000000  00000c08  2**0
+ 10 .debug_str    000002a2  00000000  00000000  00000c08  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00000108  00000000  00000000  00000e9e  2**0
+ 11 .debug_loc    00000108  00000000  00000000  00000eaa  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000038  00000000  00000000  00000fa6  2**0
+ 12 .debug_ranges 00000038  00000000  00000000  00000fb2  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -99,9 +99,9 @@ ISR(ADC_vect)
   56:	8f 93       	push	r24
   58:	ef 93       	push	r30
   5a:	ff 93       	push	r31
-	static unsigned char input_index=0;
+	static unsigned char inputIndex=0;
 	//Read the AD conversion result;
-	adcScanningData[input_index]=ADCW;
+	adcScanningData[inputIndex]=ADCW;
   5c:	80 91 62 00 	lds	r24, 0x0062
   60:	e8 2f       	mov	r30, r24
   62:	f0 e0       	ldi	r31, 0x00	; 0
@@ -114,15 +114,15 @@ ISR(ADC_vect)
   70:	31 83       	std	Z+1, r19	; 0x01
   72:	20 83       	st	Z, r18
 	//Select next ADC input;
-	if (++input_index > (LAST_ADC_INPUT-FIRST_ADC_INPUT))
+	if (++inputIndex > (LAST_ADC_INPUT-FIRST_ADC_INPUT))
   74:	8f 5f       	subi	r24, 0xFF	; 255
   76:	82 30       	cpi	r24, 0x02	; 2
   78:	18 f4       	brcc	.+6      	; 0x80 <__vector_9+0x38>
   7a:	80 93 62 00 	sts	0x0062, r24
   7e:	02 c0       	rjmp	.+4      	; 0x84 <__vector_9+0x3c>
-	input_index=0;
+	inputIndex=0;
   80:	10 92 62 00 	sts	0x0062, r1
-	ADMUX=(FIRST_ADC_INPUT | ADC_VREF_TYPE)+input_index;
+	ADMUX=(FIRST_ADC_INPUT | ADC_VREF_TYPE)+inputIndex;
   84:	80 91 62 00 	lds	r24, 0x0062
   88:	8f 5f       	subi	r24, 0xFF	; 255
   8a:	87 b9       	out	0x07, r24	; 7
@@ -453,10 +453,10 @@ void MCU_init (void)
  2a4:	78 94       	sei
  2a6:	08 95       	ret
 
-000002a8 <adcInputsread>:
+000002a8 <AdcInputsread>:
 }
 
-void adcInputsread (void)
+void AdcInputsread (void)
 {
 	//First channel value, PORTB2;
 	photoSeensor=adcScanningData[0];
@@ -474,10 +474,10 @@ void adcInputsread (void)
  2c0:	80 93 78 00 	sts	0x0078, r24
  2c4:	08 95       	ret
 
-000002c6 <mainLogic>:
+000002c6 <MainLogic>:
 }
 
-void mainLogic (void)
+void MainLogic (void)
 {
  2c6:	cf 93       	push	r28
 	//Switch state
@@ -491,33 +491,33 @@ void mainLogic (void)
 	sei ();
  2ce:	78 94       	sei
 	// ADC read function(10bit);
-	adcInputsread();
- 2d0:	eb df       	rcall	.-42     	; 0x2a8 <adcInputsread>
+	AdcInputsread();
+ 2d0:	eb df       	rcall	.-42     	; 0x2a8 <AdcInputsread>
 	//AC switch priority;
 	while (switchOn && (timeCounter>=DEBOUNCE) && (hours<AC_SWITCHOFF_DELAY))
  2d2:	cc 23       	and	r28, r28
- 2d4:	e9 f0       	breq	.+58     	; 0x310 <mainLogic+0x4a>
+ 2d4:	e9 f0       	breq	.+58     	; 0x310 <MainLogic+0x4a>
  2d6:	80 91 6e 00 	lds	r24, 0x006E
  2da:	90 91 6f 00 	lds	r25, 0x006F
  2de:	80 3d       	cpi	r24, 0xD0	; 208
  2e0:	97 40       	sbci	r25, 0x07	; 7
- 2e2:	b0 f0       	brcs	.+44     	; 0x310 <mainLogic+0x4a>
+ 2e2:	b0 f0       	brcs	.+44     	; 0x310 <MainLogic+0x4a>
  2e4:	80 91 63 00 	lds	r24, 0x0063
  2e8:	90 91 64 00 	lds	r25, 0x0064
  2ec:	05 97       	sbiw	r24, 0x05	; 5
- 2ee:	08 f4       	brcc	.+2      	; 0x2f2 <mainLogic+0x2c>
- 2f0:	54 c0       	rjmp	.+168    	; 0x39a <mainLogic+0xd4>
- 2f2:	0e c0       	rjmp	.+28     	; 0x310 <mainLogic+0x4a>
+ 2ee:	08 f4       	brcc	.+2      	; 0x2f2 <MainLogic+0x2c>
+ 2f0:	54 c0       	rjmp	.+168    	; 0x39a <MainLogic+0xd4>
+ 2f2:	0e c0       	rjmp	.+28     	; 0x310 <MainLogic+0x4a>
  2f4:	80 91 6e 00 	lds	r24, 0x006E
  2f8:	90 91 6f 00 	lds	r25, 0x006F
  2fc:	80 3d       	cpi	r24, 0xD0	; 208
  2fe:	97 40       	sbci	r25, 0x07	; 7
- 300:	38 f0       	brcs	.+14     	; 0x310 <mainLogic+0x4a>
+ 300:	38 f0       	brcs	.+14     	; 0x310 <MainLogic+0x4a>
  302:	80 91 63 00 	lds	r24, 0x0063
  306:	90 91 64 00 	lds	r25, 0x0064
  30a:	05 97       	sbiw	r24, 0x05	; 5
- 30c:	08 f4       	brcc	.+2      	; 0x310 <mainLogic+0x4a>
- 30e:	43 c0       	rjmp	.+134    	; 0x396 <mainLogic+0xd0>
+ 30c:	08 f4       	brcc	.+2      	; 0x310 <MainLogic+0x4a>
+ 30e:	43 c0       	rjmp	.+134    	; 0x396 <MainLogic+0xd0>
 	{
 		PORTB |=(1<<BULB);
 	}
@@ -530,49 +530,49 @@ void mainLogic (void)
  31c:	90 91 79 00 	lds	r25, 0x0079
  320:	28 17       	cp	r18, r24
  322:	39 07       	cpc	r19, r25
- 324:	58 f0       	brcs	.+22     	; 0x33c <mainLogic+0x76>
+ 324:	58 f0       	brcs	.+22     	; 0x33c <MainLogic+0x76>
  326:	b0 99       	sbic	0x16, 0	; 22
- 328:	09 c0       	rjmp	.+18     	; 0x33c <mainLogic+0x76>
+ 328:	09 c0       	rjmp	.+18     	; 0x33c <MainLogic+0x76>
  32a:	80 91 70 00 	lds	r24, 0x0070
  32e:	90 91 71 00 	lds	r25, 0x0071
  332:	88 3b       	cpi	r24, 0xB8	; 184
  334:	9b 40       	sbci	r25, 0x0B	; 11
- 336:	10 f0       	brcs	.+4      	; 0x33c <mainLogic+0x76>
+ 336:	10 f0       	brcs	.+4      	; 0x33c <MainLogic+0x76>
 		{
 			//Out is log 1;
 			PORTB |=(1<<BULB);
  338:	c3 9a       	sbi	0x18, 3	; 24
- 33a:	31 c0       	rjmp	.+98     	; 0x39e <mainLogic+0xd8>
+ 33a:	31 c0       	rjmp	.+98     	; 0x39e <MainLogic+0xd8>
 		}
 
 			else if ((!(PINB & (1<<PIR))) && (photoSeensor<sensivity) &&
  33c:	b0 99       	sbic	0x16, 0	; 22
- 33e:	16 c0       	rjmp	.+44     	; 0x36c <mainLogic+0xa6>
+ 33e:	16 c0       	rjmp	.+44     	; 0x36c <MainLogic+0xa6>
  340:	20 91 72 00 	lds	r18, 0x0072
  344:	30 91 73 00 	lds	r19, 0x0073
  348:	80 91 78 00 	lds	r24, 0x0078
  34c:	90 91 79 00 	lds	r25, 0x0079
  350:	28 17       	cp	r18, r24
  352:	39 07       	cpc	r19, r25
- 354:	58 f4       	brcc	.+22     	; 0x36c <mainLogic+0xa6>
+ 354:	58 f4       	brcc	.+22     	; 0x36c <MainLogic+0xa6>
  356:	b3 9b       	sbis	0x16, 3	; 22
- 358:	09 c0       	rjmp	.+18     	; 0x36c <mainLogic+0xa6>
+ 358:	09 c0       	rjmp	.+18     	; 0x36c <MainLogic+0xa6>
 					(PINB & (1<<BULB)) && (timeCounterDown>PHOTOOFFSET))
  35a:	80 91 6c 00 	lds	r24, 0x006C
  35e:	90 91 6d 00 	lds	r25, 0x006D
  362:	89 38       	cpi	r24, 0x89	; 137
  364:	93 41       	sbci	r25, 0x13	; 19
- 366:	10 f0       	brcs	.+4      	; 0x36c <mainLogic+0xa6>
+ 366:	10 f0       	brcs	.+4      	; 0x36c <MainLogic+0xa6>
 
 			{
 						PORTB &=~(1<<BULB);
  368:	c3 98       	cbi	0x18, 3	; 24
- 36a:	19 c0       	rjmp	.+50     	; 0x39e <mainLogic+0xd8>
+ 36a:	19 c0       	rjmp	.+50     	; 0x39e <MainLogic+0xd8>
 			}
 	
 				else if ((!(PINB & (1<<PIR))) && (!switchOn||switchOn) &&
  36c:	b0 99       	sbic	0x16, 0	; 22
- 36e:	0f c0       	rjmp	.+30     	; 0x38e <mainLogic+0xc8>
+ 36e:	0f c0       	rjmp	.+30     	; 0x38e <MainLogic+0xc8>
 						(photoSeensor>=sensivity) && ((PINB & (1<<BULB))))
  370:	20 91 72 00 	lds	r18, 0x0072
  374:	30 91 73 00 	lds	r19, 0x0073
@@ -586,34 +586,34 @@ void mainLogic (void)
 				else if ((!(PINB & (1<<PIR))) && (!switchOn||switchOn) &&
  380:	28 17       	cp	r18, r24
  382:	39 07       	cpc	r19, r25
- 384:	20 f0       	brcs	.+8      	; 0x38e <mainLogic+0xc8>
+ 384:	20 f0       	brcs	.+8      	; 0x38e <MainLogic+0xc8>
 						(photoSeensor>=sensivity) && ((PINB & (1<<BULB))))
  386:	b3 9b       	sbis	0x16, 3	; 22
- 388:	02 c0       	rjmp	.+4      	; 0x38e <mainLogic+0xc8>
+ 388:	02 c0       	rjmp	.+4      	; 0x38e <MainLogic+0xc8>
 
 				{
 							PORTB |=(1<<PINB3);
  38a:	c3 9a       	sbi	0x18, 3	; 24
- 38c:	08 c0       	rjmp	.+16     	; 0x39e <mainLogic+0xd8>
+ 38c:	08 c0       	rjmp	.+16     	; 0x39e <MainLogic+0xd8>
 				}
 
 					else if (PINB & (1<<PIR))
  38e:	b0 9b       	sbis	0x16, 0	; 22
- 390:	06 c0       	rjmp	.+12     	; 0x39e <mainLogic+0xd8>
+ 390:	06 c0       	rjmp	.+12     	; 0x39e <MainLogic+0xd8>
 						{
 							PORTB &=~(1<<BULB);
  392:	c3 98       	cbi	0x18, 3	; 24
- 394:	04 c0       	rjmp	.+8      	; 0x39e <mainLogic+0xd8>
+ 394:	04 c0       	rjmp	.+8      	; 0x39e <MainLogic+0xd8>
 	// ADC read function(10bit);
-	adcInputsread();
+	AdcInputsread();
 	//AC switch priority;
 	while (switchOn && (timeCounter>=DEBOUNCE) && (hours<AC_SWITCHOFF_DELAY))
 	{
 		PORTB |=(1<<BULB);
  396:	c3 9a       	sbi	0x18, 3	; 24
- 398:	ad cf       	rjmp	.-166    	; 0x2f4 <mainLogic+0x2e>
+ 398:	ad cf       	rjmp	.-166    	; 0x2f4 <MainLogic+0x2e>
  39a:	c3 9a       	sbi	0x18, 3	; 24
- 39c:	ab cf       	rjmp	.-170    	; 0x2f4 <mainLogic+0x2e>
+ 39c:	ab cf       	rjmp	.-170    	; 0x2f4 <MainLogic+0x2e>
 						{
 							PORTB &=~(1<<BULB);
 						}
@@ -636,8 +636,8 @@ int main(void)
 	{
 
 		//Main logic function;
-		mainLogic();
- 3a4:	90 df       	rcall	.-224    	; 0x2c6 <mainLogic>
+		MainLogic();
+ 3a4:	90 df       	rcall	.-224    	; 0x2c6 <MainLogic>
 		
 	}
  3a6:	fe cf       	rjmp	.-4      	; 0x3a4 <main+0x2>

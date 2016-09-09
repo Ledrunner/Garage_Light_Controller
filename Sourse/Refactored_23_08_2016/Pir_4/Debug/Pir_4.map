@@ -262,12 +262,12 @@ END GROUP
  .text.MCU_init
                 0x00000276       0x32 main.o
                 0x00000276                MCU_init
- .text.adcInputsread
+ .text.AdcInputsread
                 0x000002a8       0x1e main.o
-                0x000002a8                adcInputsread
- .text.mainLogic
+                0x000002a8                AdcInputsread
+ .text.MainLogic
                 0x000002c6       0xdc main.o
-                0x000002c6                mainLogic
+                0x000002c6                MainLogic
  .text.main     0x000003a2        0x6 main.o
                 0x000003a2                main
                 0x000003a8                . = ALIGN (0x2)
@@ -315,7 +315,7 @@ END GROUP
                 0x00800062                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
- .bss.input_index.1630
+ .bss.inputIndex.1630
                 0x00800062        0x1 main.o
  .bss.hours     0x00800063        0x2 main.o
                 0x00800063                hours
@@ -438,10 +438,10 @@ END GROUP
  *(.debug_frame)
  .debug_frame   0x00000000       0xc0 main.o
 
-.debug_str      0x00000000      0x296
+.debug_str      0x00000000      0x2a2
  *(.debug_str)
- .debug_str     0x00000000      0x296 main.o
-                                0x2ca (size before relaxing)
+ .debug_str     0x00000000      0x2a2 main.o
+                                0x2d6 (size before relaxing)
 
 .debug_loc      0x00000000      0x108
  *(.debug_loc)
