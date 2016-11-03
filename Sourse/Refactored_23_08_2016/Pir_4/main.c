@@ -34,7 +34,7 @@
 
 volatile unsigned int adcScanningData[LAST_ADC_INPUT-FIRST_ADC_INPUT+1];
 //Counters;
-volatile unsigned int on=0, timeCounter=0, timeCounterDown=0;
+volatile unsigned int on = 0, timeCounter = 0, timeCounterDown = 0;
 volatile unsigned int photoSeensor;
 volatile unsigned int sensivity;
 //Switch flags;
@@ -45,7 +45,7 @@ volatile unsigned int milliSeconds = 0, seconds = 0, minutes=0, hours=0;
 
 
 //Peripherial initialisation;
-void MCU_init (void);
+void McuInit (void);
 // ADC data read function;
 void AdcInputsread (void);
 //Main logic function;
@@ -61,7 +61,7 @@ ISR(ADC_vect)
 	adcScanningData[inputIndex]=ADCW;
 	//Select next ADC input;
 	if (++inputIndex > (LAST_ADC_INPUT-FIRST_ADC_INPUT))
-	inputIndex=0;
+	inputIndex = 0;
 	ADMUX=(FIRST_ADC_INPUT | ADC_VREF_TYPE)+inputIndex;
 	//Delay needed for the stabilization of the ADC input voltage;
 	_delay_us(10);
@@ -74,8 +74,8 @@ ISR(ADC_vect)
 ISR (TIM0_COMPA_vect)
 {
 	//Counter for light switch - is 25 milliseconds;
-	const short INTERRUPT_DELAY = 25;
-	static unsigned char acNetCounter = INTERRUPT_DELAY;
+	const short InterruptDelay = 25;
+	static unsigned char acNetCounter = InterruptDelay;
 	
 	if(PINB & (1<<AC_SWITCH))
 	{
@@ -84,14 +84,14 @@ ISR (TIM0_COMPA_vect)
 		if(acNetCounter)
 		{
 			//Time is not run;
-			acNetCounter --;
+			acNetCounter--;
 		}
 		else
 		{
 			//15 mseconds switch is on;
 			keyFlag = 0;
 			//Set the counter again;
-			acNetCounter = INTERRUPT_DELAY;
+			acNetCounter = InterruptDelay;
 		}
 	}
 	else
@@ -99,31 +99,31 @@ ISR (TIM0_COMPA_vect)
 		//Read 0 - Switch is on;
 		keyFlag = 1;
 		//Set the counter again;
-		acNetCounter = INTERRUPT_DELAY;
+		acNetCounter = InterruptDelay;
 	}
 	//Start with switch / debounnce;
 	if (keyFlag)
 	{
 		timeCounter++;
 
-		if (timeCounter>=DEBOUNCE)
+		if (timeCounter >= DEBOUNCE)
 		{
 			timeCounter = DEBOUNCE;
 			milliSeconds++;
 
-			if (milliSeconds==MILLISECONDS_IN_SECONDS)
+			if (milliSeconds == MILLISECONDS_IN_SECONDS)
 			{
-				milliSeconds=0;
+				milliSeconds = 0;
 				seconds++;
 
-				if (seconds==SECONDS_IN_MINUTES)
+				if (seconds == SECONDS_IN_MINUTES)
 				{
-					seconds=0;
+					seconds = 0;
 					minutes++;
 
-					if (minutes==MINUTES_IN_HOURS)
+					if (minutes == MINUTES_IN_HOURS)
 					{
-						minutes=0;
+						minutes = 0;
 						hours++;
 					
 						if (hours > AC_SWITCHOFF_DELAY)
@@ -137,15 +137,19 @@ ISR (TIM0_COMPA_vect)
 	}
 	else
 	{
-		milliSeconds=0; seconds=0, minutes=0, hours=0; timeCounter=0;  
+		milliSeconds = 0; 
+		seconds = 0;
+		minutes = 0;
+		hours = 0; 
+		timeCounter = 0;  
 	}
 
 	//Switch on delay and Pir sensor debounce;
-	if ((!(PINB & (1<<PIR))) && (keyFlag==0)&&(photoSeensor>=sensivity))
+	if ((!(PINB & (1<<PIR))) && (keyFlag == 0) && (photoSeensor >= sensivity))
 			on++;
 	else	on=0;
 	
-	if ((!(PINB & (1<<PIR))) && (photoSeensor<sensivity) && ((PINB & (1<<BULB))))
+	if ((!(PINB & (1<<PIR))) && (photoSeensor < sensivity) && ((PINB & (1<<BULB))))
 			timeCounterDown++;
 	else    timeCounterDown = 0;
 	//Reset the counter;
@@ -155,7 +159,7 @@ ISR (TIM0_COMPA_vect)
 
 int main(void)
 {
-	MCU_init();
+	McuInit();
 	//PORTB &= ~(1<<3);
 
 	//Main program;
@@ -170,7 +174,7 @@ int main(void)
 	
 }
 
-void MCU_init (void)
+void McuInit (void)
 {
 	//Crystal Oscillator division factor: 1;
 	#pragma optsize-
@@ -217,9 +221,9 @@ void MCU_init (void)
 void AdcInputsread (void)
 {
 	//First channel value, PORTB2;
-	photoSeensor=adcScanningData[0];
+	photoSeensor = adcScanningData[0];
 	//Second channel value, PORTB4;
-	sensivity=adcScanningData[1];
+	sensivity = adcScanningData[1];
 }
 
 void MainLogic (void)
@@ -234,26 +238,26 @@ void MainLogic (void)
 	// ADC read function(10bit);
 	AdcInputsread();
 	//AC switch priority;
-	while (switchOn && (timeCounter>=DEBOUNCE) && (hours<AC_SWITCHOFF_DELAY))
+	while (switchOn && (timeCounter >= DEBOUNCE) && (hours < AC_SWITCHOFF_DELAY))
 	{
 		PORTB |=(1<<BULB);
 	}
 	
 		//PIR=0,Switch=1;
-		if ((photoSeensor>=sensivity) && (!(PINB & (1<<PIR)))  && (on>=PIRDELAY))
+		if ((photoSeensor >= sensivity) && (!(PINB & (1<<PIR)))  && (on >= PIRDELAY))
 		{
 			//Out is log 1;
 			PORTB |=(1<<BULB);
 		}
 
-			else if ((!(PINB & (1<<PIR))) && (photoSeensor<sensivity) &&
-					(PINB & (1<<BULB)) && (timeCounterDown>PHOTOOFFSET))
+			else if ((!(PINB & (1<<PIR))) && (photoSeensor < sensivity) &&
+					(PINB & (1<<BULB)) && (timeCounterDown > PHOTOOFFSET))
 
 			{
 						PORTB &=~(1<<BULB);
 			}
 	
-				else if ((!(PINB & (1<<PIR))) && (!switchOn||switchOn) &&
+				else if ((!(PINB & (1<<PIR))) && (!switchOn || switchOn) &&
 						(photoSeensor>=sensivity) && ((PINB & (1<<BULB))))
 
 				{
